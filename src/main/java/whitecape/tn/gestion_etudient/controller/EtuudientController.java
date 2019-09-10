@@ -20,29 +20,40 @@ public class EtuudientController {
     private EtudientRepository etudientRepository;
 
 
-
     @GetMapping("/index")
 
-    public  String index(Model model,
-                         @RequestParam(name="page", defaultValue="0")int p
-                       )
-
-    {
-        Page <Etudient> pageEtudients=etudientRepository.findAll(new PageRequest(p,5));
-        model.addAttribute("etudiants",pageEtudients.getContent());
-        int pageCount=pageEtudients.getTotalPages();
-        int [] pages=new int[pageCount];
-        for (int i=0;i<pageCount;i++)
-            pages[i]=i;
+    public String index(Model model,
+                        @RequestParam(name = "page", defaultValue = "0") int p,
+                        @RequestParam(name = "motCle", defaultValue = "") String mc
+    ) {
+        Page <Etudient> pageEtudients = etudientRepository.chercherEtudient("%" + mc + "%", new PageRequest(p, 5));
+        model.addAttribute("etudiants", pageEtudients.getContent());
+        int pageCount = pageEtudients.getTotalPages();
+        int[] pages = new int[pageCount];
+        for (int i = 0; i < pageCount; i++)
+            pages[i] = i;
 
         model.addAttribute("page", pages);
-        model.addAttribute("pageEtudients",pageEtudients);
-        model.addAttribute("pageCaurante",p);
+        model.addAttribute("pageEtudients", pageEtudients);
+        model.addAttribute("pageCaurante", p);
+        model.addAttribute("motCle", mc);
 
 
-
-        return"etudiants";
+        return "etudiants";
     }
+
+    @GetMapping("/delete")
+    private String delete(Long id,String mc,int page,String motCle){
+        etudientRepository.deleteById(id);
+
+        return "redirect:index?page="+page+ "&motcle=" +motCle ;
+    }
+
+
+@GetMapping("/formEtudiants")
+    private String home(){
+        return"formEtudiants";
+}
 
 
 }
