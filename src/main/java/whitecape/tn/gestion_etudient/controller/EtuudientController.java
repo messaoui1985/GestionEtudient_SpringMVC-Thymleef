@@ -5,9 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import whitecape.tn.gestion_etudient.entites.Etudient;
 import whitecape.tn.gestion_etudient.repository.EtudientRepository;
 
@@ -24,16 +23,14 @@ public class EtuudientController {
 
     public String index(Model model,
                         @RequestParam(name = "page", defaultValue = "0") int p,
-                        @RequestParam(name = "motCle", defaultValue = "") String mc
-    ) {
-        Page <Etudient> pageEtudients = etudientRepository.chercherEtudient("%" + mc + "%", new PageRequest(p, 5));
+                        @RequestParam(name = "size",defaultValue = "5")int s ,
+                        @RequestParam(name = "motCle", defaultValue = "") String mc) {
+        Page <Etudient> pageEtudients = etudientRepository.chercherEtudient("%" +mc+ "%", new PageRequest(p,s));
         model.addAttribute("etudiants", pageEtudients.getContent());
-        int pageCount = pageEtudients.getTotalPages();
-        int[] pages = new int[pageCount];
-        for (int i = 0; i < pageCount; i++)
-            pages[i] = i;
 
-        model.addAttribute("page", pages);
+        int[] etudiants= new int[pageEtudients.getTotalPages()];
+        model.addAttribute("page", etudiants);
+        model.addAttribute("size",s);
         model.addAttribute("pageEtudients", pageEtudients);
         model.addAttribute("pageCaurante", p);
         model.addAttribute("motCle", mc);
@@ -51,9 +48,19 @@ public class EtuudientController {
 
 
 @GetMapping("/formEtudiants")
-    private String home(){
+    private String formEtudiants(Model model){
+        model.addAttribute("etudiants", new Etudient());
         return"formEtudiants";
 }
+    @PostMapping("/saveEtudiant")
 
-
+    private String save(Etudient et, BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            return"formEtudiants";
+        }
+        else {
+            etudientRepository.save(et);
+            return "redirect:index";
+        }
+    }
 }

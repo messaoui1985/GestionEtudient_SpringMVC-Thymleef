@@ -1,17 +1,21 @@
 package whitecape.tn.gestion_etudient.entites;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
 @Entity
 public class Etudient implements Serializable {
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String nom;
+    @DateTimeFormat(pattern ="yyyy-MM-dd")
     private Date dateNaissance ;
     private String email ;
     private String photo;
