@@ -5,18 +5,26 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 
-import javax.persistence.GenerationType;
+
 import javax.persistence.Id;
+
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 @Entity
 public class Etudient implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue()
     private Long id;
+  @NotEmpty
+    @Size(min = 5,max = 30, message = "je ne veut pas")
     private String nom;
     @DateTimeFormat(pattern ="yyyy-MM-dd")
     private Date dateNaissance ;
+    @NotEmpty
+    @Email
     private String email ;
     private String photo;
 
